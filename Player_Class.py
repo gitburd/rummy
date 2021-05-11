@@ -59,7 +59,15 @@ class Player:
 
     def print_cards(self):
         print(self.cards)
-    
+
+    def print_card(self,card):
+        return(emoji.emojize(f"{card['Value']}{card['Suit']}"))
+
+    def print_discard_options(self):
+        print(f"\nDiscard options:")
+        for i in range(len(self.Hand)):
+            print(f"{i+1}:{self.print_card(self.Hand[i])}", end="  ")
+
     def value_meld_check(self, cards):
         switcher={
             ":heart_suit:":"H",":spade_suit:":"S",":club_suit:":"C",":diamond_suit:":"D"
