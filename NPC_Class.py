@@ -13,6 +13,19 @@ class NPC(Player):
     def print_discards(self):
         print(len(self.discards), self.discards)
 
+    def npc_discard(self):
+        if len(self.unmatched_cards) > 0:
+            if len(self.discards) > 0:
+                # todo: discard highest pip card
+                discard = self.discards[0]
+            else:
+                # todo: discard highest pip card
+                discard = self.unmatched_cards[0]
+
+            return  np.where(self.Hand == discard)
+        else:
+            print("NPC has gin!")
+
     def suit_run_check(self):
         self.discards = self.Hand.copy()
         self.unmatched_cards = self.Hand.copy()
@@ -32,7 +45,7 @@ class NPC(Player):
             run = 1
             try:
                 card_value = card_values[str(card['Value'])]
-                print("!!!!!!card value", card_value)
+                # print("!!!!!!card value", card_value)
                 above = int(card_value) + 1
                 while above < 14:
                     above_label = valueCards[above]
@@ -71,7 +84,7 @@ class NPC(Player):
                 # print("discards!", len(self.discards), self.discards)
             except Exception as e:
                 print("Error matching below card, ", e)
-        print("HERE! end of suit loop:", "unmatched:", len(self.unmatched_cards), self.unmatched_cards, "\ndiscards:",len(self.discards), self.discards)
+        # print("HERE! end of suit loop:", "unmatched:", len(self.unmatched_cards), self.unmatched_cards, "\ndiscards:",len(self.discards), self.discards)
 
     def value_run_check(self):
         switcher={
@@ -104,4 +117,4 @@ class NPC(Player):
                 self.discards = self.discards[self.discards != card]
                 # remove from dicard list
             
-        print("HERE! end of value loop :", "unmatched:", len(self.unmatched_cards), self.unmatched_cards, "\ndiscards:",len(self.discards), self.discards)
+        # print("HERE! end of value loop :", "unmatched:", len(self.unmatched_cards), self.unmatched_cards, "\ndiscards:",len(self.discards), self.discards)

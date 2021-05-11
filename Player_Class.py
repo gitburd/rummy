@@ -52,10 +52,6 @@ class Player:
         self.Hand = np.append(self.Hand, card)
         self.score = self.set_score()
     
-    def discard_card(self, card):
-        global discard
-        discard = self.Hand[card]
-        self.Hand = np.delete(self.Hand,card)
     
     def play(self, new_hand):
         self.Hand = new_hand
@@ -64,15 +60,14 @@ class Player:
     def print_cards(self):
         print(self.cards)
     
-    def count_meld_check(self):
+    def value_meld_check(self, cards):
         switcher={
             ":heart_suit:":"H",":spade_suit:":"S",":club_suit:":"C",":diamond_suit:":"D"
         }
 
         self.meld_cards = np.array([])
-        self.unmatched_cards = self.Hand.copy()
 
-        for card in self.Hand:
+        for card in cards:
             count = 0
             if self.cards[f"{card['Value']}H"] == True:
                 count += 1
@@ -85,13 +80,11 @@ class Player:
 
             if count > 2:
                 self.meld_cards = np.append(self.meld_cards, card)
-                self.unmatched_cards = self.unmatched_cards[self.unmatched_cards != card]
+                cards = cards[cards != card]
+        return cards
         
-        print("um", len(self.unmatched_cards))
-        print("mc", len(self.meld_cards))
 
-
-    def run_meld_check(self):
+    def suit_meld_check(self, cards):
         switcher={
             ":heart_suit:":"H",":spade_suit:":"S",":club_suit:":"C",":diamond_suit:":"D"
         }
@@ -101,42 +94,78 @@ class Player:
             "10":10, "9":9, "8":8, "7":7, "6":6,
             "5":5, "4":4, "3":3, "2":2
         }
-        valueCards = {11:"J", 12:"Q", 13:"K"}
+        
+        valueCards = { 13:"K", 12:"Q", 11:"J", 10:"10", 9:"9", 8:"8", 7:"7", 6:"6",
+            5:"5", 4:"4", 3:"3", 2:"2", 1:"A"}
 
-        for card in self.Hand:
+        for card in cards:
+            run = 1
             try:
-                card_value = card_values.get(str(card['Value']))
+                card_value = card_values[str(card['Value'])]
                 above = int(card_value) + 1
-                below = int(card_value) - 1
+                while above < 14:
+                    above_label = valueCards[above]
+                    if above_label and self.cards[f"{above_label}{switcher[card['Suit']]}"] == True:
+                        run += 1
+                        if run > 2:
+                           cards = cards[cards != card]
+                    else:
+                        break
 
-                if above == 14:
-                    above = None
-                elif above > 10:
-                    above = valueCards.get(above)
-
-                if below == 0:
-                    below == None
-                elif below == 1:
-                    below = "A"
-                elif below > 10:
-                    below = valueCards.get(below)
-
-                if (above and self.cards[f"{above}{switcher[card['Suit']]}"] == True
-                    and below and self.cards[f"{below}{switcher[card['Suit']]}"] == True):
-                    print("3 CARD RUN!!!!!!")
-                    self.runs = np.append(self.runs, card)
-                    self.unmatched_cards = self.unmatched_cards[self.unmatched_cards != card]
-
-                    for user_card in self.Hand:
-                        if user_card['Suit'] == card['Suit'] and user_card['Value'] == above:
-                            self.runs = np.append(self.runs, user_card)
-                            self.unmatched_cards = self.unmatched_cards[self.unmatched_cards != user_card]
-                        elif user_card['Suit'] == card['Suit'] and user_card['Value'] == below:
-                            self.runs = np.append(self.runs, user_card)
-                            self.unmatched_cards = self.unmatched_cards[self.unmatched_cards != user_card]
-
-                    print('len runs', len(self.runs))
-                    print('unmatched,', len(self.unmatched_cards))
-
+                    above += 1
             except Exception as e:
-                print("GOT THIS 2, ", e)
+                print("Error matching above card, ", e)
+
+            try:
+                below = int(card_value) - 1
+                while below > 0:
+                    below_label = valueCards[below]
+                    if below_label and self.cards[f"{below_label}{switcher[card['Suit']]}"] == True:
+                        run += 1
+                        if run > 2:
+                            cards = cards[cards != card]
+                    else:
+                        break
+                    below -= 1
+            except Exception as e:
+                print("Error matching below card, ", e)
+        return cards
+    
+    def get_unmatched_pips(self,cards):
+        card_values = {            
+            "A" : 1, "K" : 10, "Q" : 10, "J" : 10,
+            "10":10, "9":9, "8":8, "7":7, "6":6,
+            "5":5, "4":4, "3":3, "2":2
+        }
+        pips = 0
+        
+        for card in cards:
+            pips += card_values[str(card['Value'])]
+            print(card['Value'])
+        
+        print("unmatched pips: ", pips)
+        return pips
+    
+    def knock(self, opponent):
+        print('knock')
+    
+    def score_check(self,cards):
+        print("SCORE CHECK")
+        unmatched_cards = self.suit_meld_check(cards)
+        # print("unmatched after suit check", unmatched_cards)
+        unmatched_cards = self.value_meld_check(unmatched_cards)
+        # print("unmatched after value check", unmatched_cards)
+        suit_first_score = self.get_unmatched_pips(unmatched_cards)
+        # print("!!!! suit first PIPS:", pips)
+
+        unmatched_cards = self.value_meld_check(cards)
+        # print("unmatched after value check", unmatched_cards)
+        unmatched_cards = self.suit_meld_check(unmatched_cards)
+        # print("unmatched after suit check", unmatched_cards)
+        value_first_score = self.get_unmatched_pips(unmatched_cards)
+        
+        print("!!!! PIPS:", suit_first_score, "OR",value_first_score)
+        return min(suit_first_score,value_first_score)
+
+
+

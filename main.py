@@ -43,30 +43,41 @@ def draw_card():
     return card
 
 def print_card(card):
-    return(emoji.emojize(f"{discard['Value']}{discard['Suit']}"))
+    return(emoji.emojize(f"{card['Value']}{card['Suit']}"))
+
+def player_discard_card(player, card):
+    global discard
+    # print("inside human discard", card,"++++", player.Hand[card])
+    discard = player.Hand[card]
+    # print("inside hd", discard)
+    player.Hand = np.delete(player.Hand,card)
+
 
 deck = create_deck()
 discard = draw_card()
+print("inital discard: ", discard)
 Human_Player.Hand = get_hand()
 Human_Player.set_score()
 NPC.Hand = get_hand()
 NPC.set_score()
 
+# print(Human_Player)
+# print(NPC)
 while True:
     print("---- First while ----")
     if len(deck) < 3:
         print("Shuffling...")
         deck = create_deck()
 
-    print(Human_Player)
-    print(NPC)
     Human_Player.set_cards()
     NPC.set_cards()
-    Human_Player.count_meld_check()
-    Human_Player.run_meld_check()
+
+    print(Human_Player)
+    print(NPC)
+
     while True:
         print("---- Second while ----")
-        print(f"Discard: {print_card(discard)}")
+        print(f"Discard: {discard}")
 
         action = input("\nDraw from discard or deck?(a/s): ")
 
@@ -92,7 +103,7 @@ while True:
         try:
             if int(action) in range(1,12):
                 print(f"it was {int(action)}")
-                Human_Player.discard_card(int(action)-1)
+                player_discard_card(Human_Player, int(action)-1)
                 print("\nYou: ", Human_Player)
                 print(f"Discard: {print_card(discard)}")
                 break
@@ -101,13 +112,23 @@ while True:
         except Exception as e:
             print('Enter a number 1-10 to discard')
 
+    print(f"Human Discard: {print_card(discard)}")
+
+    cards = Human_Player.Hand.copy()
+    Human_Player.score_check(cards)
+
     print("---- NPC turn ----")
     print("\nNPC: ", NPC)
     NPC.hit(discard)
     NPC.suit_run_check()
     NPC.value_run_check()
+    player_discard_card(NPC, NPC.npc_discard())
+    print(f"NPC Discard: {discard}")
+    # NPC.get_unmatched_pips()
 
-    NPC.discard_card(0)
+    cards = NPC.Hand.copy()
+    NPC.score_check(cards)
+
     print("\nNPC: ", NPC)
-    print(f"Discard: {print_card(discard)}")
+
 
