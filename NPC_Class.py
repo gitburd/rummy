@@ -18,13 +18,17 @@ class NPC(Player):
             if len(self.discards) > 0:
                 # todo: discard highest pip card
                 discard = self.discards[0]
+                self.discards = self.discards[self.discards != discard]
+                self.Hand = self.Hand[self.Hand != discard]
+                return discard
             else:
                 # todo: discard highest pip card
                 discard = self.unmatched_cards[0]
-
-            return  np.where(self.Hand == discard)
+                self.unmatched_cards = self.unmatched_cards[self.unmatched_cards != discard]
+                self.Hand = self.Hand[self.Hand != discard]
+                return discard
         else:
-            print("NPC has gin!")
+            return("NPC has gin!")
 
     def suit_run_check(self):
         self.discards = self.Hand.copy()

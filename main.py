@@ -7,6 +7,7 @@ from NPC_Class import NPC
 
 Human_Player = Player()
 NPC = NPC()
+knock = False
 
 def create_deck():
     deck = np.array([])
@@ -43,7 +44,8 @@ def draw_card():
     return card
 
 def print_card(card):
-    print(emoji.emojize(f"{card['Value']}{card['Suit']}"))
+    return(emoji.emojize(f"{card['Value']}{card['Suit']}"))
+    # print(emoji.emojize(f"{card['Value']}{card['Suit']}"))
 
 def player_discard_card(player, card):
     global discard
@@ -55,8 +57,8 @@ def player_discard_card(player, card):
 
 deck = create_deck()
 discard = draw_card()
-print("inital discard: ", end="")
-print_card(discard)
+print("inital discard:", end=" ")
+print(print_card(discard))
 Human_Player.Hand = get_hand()
 Human_Player.set_score()
 NPC.Hand = get_hand()
@@ -64,7 +66,7 @@ NPC.set_score()
 
 # print(Human_Player)
 # print(NPC)
-while True:
+while not knock:
     print("---- First while ----")
     if len(deck) < 3:
         print("Shuffling...")
@@ -78,8 +80,8 @@ while True:
 
     while True:
         print("---- Second while ----")
-        print(f"Discard: ", end="")
-        print_card(discard)
+        print(f"Discard:", end=" ")
+        print(print_card(discard))
 
         action = input("\nDraw from discard or deck?(a/s): ")
 
@@ -95,7 +97,8 @@ while True:
             else:
                 print('Enter "h" to HIT or "s" to STAY.')
         except Exception as e:
-            print('Enter "h" to HIT or "s" to STAY.')
+            print('Exception', e)
+
 
     while True:
         print("---- Third while ----")
@@ -107,16 +110,33 @@ while True:
                 print(f"it was {int(action)}")
                 player_discard_card(Human_Player, int(action)-1)
                 print("\nYou: ", Human_Player)
-                print(f"Discard: ", end="")
-                print_card(discard)
+                print(f"Discard:", end=" ")
+                print(print_card(discard))
                 break
             else:
                 print('Enter a number 1-10 to discard')
         except Exception as e:
             print('Enter a number 1-10 to discard')
 
-    print(f"Human Discard:", end="")
-    print_card(discard)
+
+    pips = Human_Player.score_check(Human_Player.Hand)
+    if pips < 60:
+        while True:
+            print("---- fourth while ----")
+            action = input("\nDo you want to knock?(y/n): ")
+            try:
+                if action.lower() == "y":
+                    knock = Human_Player.knock()
+                    break
+                elif action.lower() == "n":
+                    break
+                else:
+                    print('Enter "y" to KNOCK or "n" not to.')
+            except Exception as e:
+                print('Exception', e)
+
+    print(f"Human Discard:", end=" ")
+    print(print_card(discard))
     cards = Human_Player.Hand.copy()
     Human_Player.score_check(cards)
 
@@ -125,7 +145,7 @@ while True:
     NPC.hit(discard)
     NPC.suit_run_check()
     NPC.value_run_check()
-    player_discard_card(NPC, NPC.npc_discard())
+    discard = NPC.npc_discard()
     print(f"NPC Discard: {discard}")
     # NPC.get_unmatched_pips()
 
@@ -135,3 +155,8 @@ while True:
     print("\nNPC: ", NPC)
 
 
+print('KNOCK!', knock)
+if Human_Player.has_knocked:
+    print('THE HUMAN KNOCKED')
+else:
+    print("THE NPC KNOCKED")

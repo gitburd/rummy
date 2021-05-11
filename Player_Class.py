@@ -11,6 +11,7 @@ class Player:
         self.meld_cards = np.array([])
         self.unmatched_cards = self.Hand.copy()
         self.runs=np.array([])
+        self.has_knocked = False
 
     def __str__(self):
         currentHand = ""
@@ -51,8 +52,7 @@ class Player:
     def hit(self, card):
         self.Hand = np.append(self.Hand, card)
         self.score = self.set_score()
-    
-    
+
     def play(self, new_hand):
         self.Hand = new_hand
         self.score = self.set_score()
@@ -149,14 +149,11 @@ class Player:
         
         for card in cards:
             pips += card_values[str(card['Value'])]
-            print(card['Value'])
+            print(card['Value'], end=" + ")
         
         print("unmatched pips: ", pips)
         return pips
-    
-    def knock(self, opponent):
-        print('knock')
-    
+
     def score_check(self,cards):
         print("SCORE CHECK")
         unmatched_cards = self.suit_meld_check(cards)
@@ -171,9 +168,17 @@ class Player:
         unmatched_cards = self.suit_meld_check(unmatched_cards)
         # print("unmatched after suit check", unmatched_cards)
         value_first_score = self.get_unmatched_pips(unmatched_cards)
-        
+
         print("!!!! PIPS:", suit_first_score, "OR",value_first_score)
         return min(suit_first_score,value_first_score)
 
-
-
+    def knock(self):
+        global knock
+        cards = self.Hand
+        pips = self.score_check(cards)
+        if pips > 60:
+            print("You can't knock yet. Build more matches.")
+            return False
+        else:
+            self.has_knocked = True
+            return True
