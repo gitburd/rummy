@@ -1,125 +1,119 @@
-import numpy as np
-from random import shuffle
 import emoji
 from cardmap import card_map
 from Player_Class import Player
 from NPC_Class import NPC
+import settings
 
-Human_Player = Player()
-NPC = NPC()
-knock = False
+settings.init()
 
-def create_deck():
-    deck = np.array([])
-    for card in range(2,11): # add 2-10
-        heart={"Value":card, "Suit": ":heart_suit:"}
-        spade={"Value":card, "Suit": ":spade_suit:"}
-        club={"Value":card, "Suit": ":club_suit:"}
-        dimond={"Value":card, "Suit": ":diamond_suit:"}
-        deck = np.append(deck, [heart,spade,club,dimond])
-
-    faceValues = ["J", "Q", "K", "A"]
-    for card in faceValues: # add face values
-        heart={"Value":card, "Suit":":heart_suit:"}
-        spade={"Value":card, "Suit":":spade_suit:"}
-        club={"Value":card, "Suit":":club_suit:"}
-        dimond={"Value":card, "Suit":":diamond_suit:"}
-        deck = np.append(deck, [heart,spade,club,dimond])
-    shuffle(deck)
-    return deck
 
 def get_hand():
-    global deck
-    hand = np.array([])
-    for i in range (10):
-        card = deck[0]
-        hand = np.append(hand,card)
-        deck = np.delete(deck,0)
+    hand = []
+    for i in range(10):
+        card = settings.deck.pop()
+        hand.append(card)
     return hand
 
+
 def draw_card():
-    global deck
-    card = deck[0]
-    deck = np.delete(deck,0)
+    card = settings.deck.pop()
     return card
 
+
 def print_card(card):
-    return(emoji.emojize(f"{card['Value']}{card['Suit']}"))
-    # print(emoji.emojize(f"{card['Value']}{card['Suit']}"))
-
-def player_discard_card(player, card):
-    global discard
-    # print("inside human discard", card,"++++", player.Hand[card])
-    discard = player.Hand[card]
-    # print("inside hd", discard)
-    player.Hand = np.delete(player.Hand,card)
+    try:
+        return (emoji.emojize(f"{card['value']}{card['suit']}"))
+    except Exception as e:
+        print(emoji.emojize(f"{card['value']}{card['suit']}"))
 
 
-deck = create_deck()
-discard = draw_card()
+def player_discard_card(player, idx):
+    settings.discard = player.hand[idx]
+    player.discard(player.hand[idx])
+
+
 print("inital discard:", end=" ")
-print(print_card(discard))
-Human_Player.Hand = get_hand()
-Human_Player.set_score()
-NPC.Hand = get_hand()
-NPC.set_score()
+print(print_card(settings.discard))
+human_hand = [{'value': 10, 'order': 10, 'pips': 10, 'suit': ':spade_suit:'},
+              {'value': 'J', 'order': 11, 'pips': 10, 'suit': ':spade_suit:'},
+              {'value': 'Q', 'order': 12, 'pips': 10, 'suit': ':spade_suit:'},
+              {'value': 5, 'order': 5, 'pips': 5, 'suit': ':spade_suit:'},
+              {'value': 4, 'order': 4, 'pips': 4, 'suit': ':club_suit:'},
+              {'value': 9, 'order': 9, 'pips': 9, 'suit': ':spade_suit:'},
+              {'value': 5, 'order': 5, 'pips': 5, 'suit': ':club_suit:'},
+              {'value': 3, 'order': 3, 'pips': 3, 'suit': ':heart_suit:'},
+              {'value': 'K', 'order': 13, 'pips': 10, 'suit': ':spade_suit:'},
+              {'value': 5, 'order': 5, 'pips': 5, 'suit': ':diamond_suit:'}]
 
-# print(Human_Player)
-# print(NPC)
+npc_hand = [{'value': 'J', 'order': 11, 'pips': 10, 'suit': ':diamond_suit:'},
+            {'value': 5, 'order': 5, 'pips': 5, 'suit': ':heart_suit:'},
+            {'value': 'Q', 'order': 12, 'pips': 10, 'suit': ':club_suit:'},
+            {'value': 'Q', 'order': 12, 'pips': 10, 'suit': ':heart_suit:'},
+            {'value': 'A', 'order': 1, 'pips': 1, 'suit': ':spade_suit:'},
+            {'value': 2, 'order': 2, 'pips': 2, 'suit': ':spade_suit:'},
+            {'value': 3, 'order': 3, 'pips': 3, 'suit': ':club_suit:'},
+            {'value': 10, 'order': 10, 'pips': 10, 'suit': ':diamond_suit:'},
+            {'value': 'Q', 'order': 12, 'pips': 10, 'suit': ':diamond_suit:'},
+            {'value': 9, 'order': 9, 'pips': 9, 'suit': ':diamond_suit:'}]
+
+# Human_Player = Player(get_hand())
+Human_Player = Player(human_hand)
+# Human_Player.score_check()
+ComputerPlayer = NPC(npc_hand)
+knock = False
+
+
 while not knock:
     print("---- First while ----")
-    if len(deck) < 3:
+    if len(settings.deck) < 3:
         print("Shuffling...")
-        deck = create_deck()
-
-    Human_Player.set_cards()
-    NPC.set_cards()
+        settings.init()
 
     print(Human_Player)
-    print(NPC)
+    print(ComputerPlayer)
 
     while True:
         print("---- Second while ----")
         print(f"Discard:", end=" ")
-        print(print_card(discard))
+        print(print_card(settings.discard))
 
         action = input("\nDraw from discard or deck?(a/s): ")
 
         try:
             if action.lower() == "a":
-                Human_Player.hit(discard)
+                Human_Player.draw(settings.discard)
                 print("\nYou: ", Human_Player)
                 break
             elif action.lower() == "s":
-                Human_Player.hit(draw_card())
+                draw_card()
+                Human_Player.draw(draw_card())
                 print("\nYou: ", Human_Player)
                 break
             else:
-                print('Enter "h" to HIT or "s" to STAY.')
+                print('Enter "h" to draw or "s" to STAY.')
         except Exception as e:
             print('Exception', e)
-
 
     while True:
         print("---- Third while ----")
         Human_Player.print_discard_options()
-        action = input("\nWhich do you want to discard?(1/2/3/4/5/6/7/8/9/10/11): ")
+        action = input(
+            "\nWhich do you want to discard?(1/2/3/4/5/6/7/8/9/10/11): ")
 
         try:
-            if int(action) in range(1,12):
-                print(f"it was {int(action)}")
+            if int(action) in range(1, 12):
                 player_discard_card(Human_Player, int(action)-1)
                 print("\nYou: ", Human_Player)
                 print(f"Discard:", end=" ")
-                print(print_card(discard))
+                print(print_card(settings.discard))
                 break
             else:
                 print('Enter a number 1-10 to discard')
         except Exception as e:
-            print('Enter a number 1-10 to discard')
+            print('There was an issue', e)
 
-
-    pips = Human_Player.score_check(Human_Player.Hand)
+    pips = Human_Player.score_check()
+    print("Socre check then got pips on main...", pips)
     if pips < 60:
         while True:
             print("---- fourth while ----")
@@ -134,29 +128,26 @@ while not knock:
                     print('Enter "y" to KNOCK or "n" not to.')
             except Exception as e:
                 print('Exception', e)
+    if knock == True:
+        break
 
     print(f"Human Discard:", end=" ")
-    print(print_card(discard))
-    cards = Human_Player.Hand.copy()
-    Human_Player.score_check(cards)
+    print(print_card(settings.discard))
+
+    Human_Player.score_check()
 
     print("---- NPC turn ----")
-    print("\nNPC: ", NPC)
-    NPC.hit(discard)
-    NPC.suit_run_check()
-    NPC.value_run_check()
-    discard = NPC.npc_discard()
-    print(f"NPC Discard: {discard}")
-    # NPC.get_unmatched_pips()
-
-    cards = NPC.Hand.copy()
-    NPC.score_check(cards)
-
-    print("\nNPC: ", NPC)
-
+    print("\nNPC: ", ComputerPlayer)
+    ComputerPlayer.npc_turn(settings.discard)
+    print("\nNPC: ", ComputerPlayer)
+    knock = ComputerPlayer.knock()
 
 print('KNOCK!', knock)
 if Human_Player.has_knocked:
     print('THE HUMAN KNOCKED')
+    Human_Player.score_hand(ComputerPlayer)
 else:
+    ComputerPlayer.score_hand(Human_Player)
     print("THE NPC KNOCKED")
+
+print("New Scores: ", Human_Player.score, ComputerPlayer.score)
