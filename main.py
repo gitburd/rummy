@@ -34,27 +34,37 @@ def player_discard_card(player, idx):
 
 print("inital discard:", end=" ")
 print(print_card(settings.discard))
-human_hand = [{'value': 10, 'order': 10, 'pips': 10, 'suit': ':spade_suit:'},
-              {'value': 'J', 'order': 11, 'pips': 10, 'suit': ':spade_suit:'},
-              {'value': 'Q', 'order': 12, 'pips': 10, 'suit': ':spade_suit:'},
-              {'value': 5, 'order': 5, 'pips': 5, 'suit': ':spade_suit:'},
-              {'value': 4, 'order': 4, 'pips': 4, 'suit': ':club_suit:'},
-              {'value': 9, 'order': 9, 'pips': 9, 'suit': ':spade_suit:'},
-              {'value': 5, 'order': 5, 'pips': 5, 'suit': ':club_suit:'},
-              {'value': 3, 'order': 3, 'pips': 3, 'suit': ':heart_suit:'},
-              {'value': 'K', 'order': 13, 'pips': 10, 'suit': ':spade_suit:'},
-              {'value': 5, 'order': 5, 'pips': 5, 'suit': ':diamond_suit:'}]
+human_hand = [{'value': 10, 'order': 10, 'pips': 10, 'suit': ':spade_suit:', 'id': 34},
+              {'value': 'J', 'order': 11, 'pips': 10,
+                  'suit': ':spade_suit:', 'id': 38},
+              {'value': 'Q', 'order': 12, 'pips': 10,
+                  'suit': ':spade_suit:', 'id': 42},
+              {'value': 5, 'order': 5, 'pips': 5,
+                  'suit': ':spade_suit:', 'id': 14},
+              {'value': 4, 'order': 4, 'pips': 4, 'suit': ':club_suit:', 'id': 11},
+              {'value': 9, 'order': 9, 'pips': 9,
+                  'suit': ':spade_suit:', 'id': 30},
+              {'value': 5, 'order': 5, 'pips': 5, 'suit': ':club_suit:', 'id': 15},
+              {'value': 3, 'order': 3, 'pips': 3, 'suit': ':heart_suit:', 'id': 5},
+              {'value': 'K', 'order': 13, 'pips': 10,
+                  'suit': ':spade_suit:', 'id': 46},
+              {'value': 5, 'order': 5, 'pips': 5, 'suit': ':diamond_suit:', 'id': 16}]
 
-npc_hand = [{'value': 'J', 'order': 11, 'pips': 10, 'suit': ':diamond_suit:'},
-            {'value': 5, 'order': 5, 'pips': 5, 'suit': ':heart_suit:'},
-            {'value': 'Q', 'order': 12, 'pips': 10, 'suit': ':club_suit:'},
-            {'value': 'Q', 'order': 12, 'pips': 10, 'suit': ':heart_suit:'},
-            {'value': 'A', 'order': 1, 'pips': 1, 'suit': ':spade_suit:'},
-            {'value': 2, 'order': 2, 'pips': 2, 'suit': ':spade_suit:'},
-            {'value': 3, 'order': 3, 'pips': 3, 'suit': ':club_suit:'},
-            {'value': 10, 'order': 10, 'pips': 10, 'suit': ':diamond_suit:'},
-            {'value': 'Q', 'order': 12, 'pips': 10, 'suit': ':diamond_suit:'},
-            {'value': 9, 'order': 9, 'pips': 9, 'suit': ':diamond_suit:'}]
+npc_hand = [{'value': 'J', 'order': 11, 'pips': 10, 'suit': ':diamond_suit:', 'id': 40},
+            {'value': 5, 'order': 5, 'pips': 5, 'suit': ':heart_suit:', 'id': 13},
+            {'value': 'Q', 'order': 12, 'pips': 10,
+                'suit': ':club_suit:', 'id': 43},
+            {'value': 'Q', 'order': 12, 'pips': 10,
+                'suit': ':heart_suit:', 'id': 41},
+            {'value': 'A', 'order': 1, 'pips': 1,
+                'suit': ':spade_suit:', 'id': 42},
+            {'value': 2, 'order': 2, 'pips': 2, 'suit': ':spade_suit:', 'id': 2},
+            {'value': 3, 'order': 3, 'pips': 3, 'suit': ':club_suit:', 'id': 7},
+            {'value': 10, 'order': 10, 'pips': 10,
+                'suit': ':diamond_suit:', 'id': 36},
+            {'value': 'Q', 'order': 12, 'pips': 10,
+                'suit': ':diamond_suit:', 'id': 44},
+            {'value': 9, 'order': 9, 'pips': 9, 'suit': ':diamond_suit:', 'id': 32}]
 
 # Human_Player = Player(get_hand())
 Human_Player = Player(human_hand)

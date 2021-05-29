@@ -104,10 +104,8 @@ class Player:
                       5: "5", 4: "4", 3: "3", 2: "2", 1: "A"}
 
         melds = []
-
         for card in cards:
             run = 1
-
             try:
                 above = int(card['order']) + 1
                 while above < 14:
@@ -209,8 +207,12 @@ class Player:
             who = "COMPUTER"
             opp = "HUMAN"
         print(f"{who}\nMelds:", end=" ")
-        self.print_cards(self.suit_melds)
-        self.print_cards(self.value_melds)
+        total_melds = self.suit_melds + self.value_melds
+        # self.print_cards(self.suit_melds)
+        # self.print_cards(self.value_melds)
+
+        # print(total_melds)
+        self.print_cards(list({v['id']: v for v in total_melds}.values()))
 
         print("\nUnmatched cards:", end=" ")
         self.print_cards(self.unmatched_cards)
@@ -220,8 +222,16 @@ class Player:
         opponent.score_check()
 
         print(f"\n{opp}\nMelds:", end=" ")
-        opponent.print_cards(opponent.suit_melds)
-        opponent.print_cards(opponent.value_melds)
+
+        op_total_melds = opponent.suit_melds + opponent.value_melds
+        # self.print_cards(self.suit_melds)
+        # self.print_cards(self.value_melds)
+
+        # print(total_melds)
+        opponent.print_cards(
+            list({v['id']: v for v in op_total_melds}.values()))
+        # opponent.print_cards(opponent.suit_melds)
+        # opponent.print_cards(opponent.value_melds)
 
         suit_melds = self.suit_melds
         value_melds = self.value_melds
